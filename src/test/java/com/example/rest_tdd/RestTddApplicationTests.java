@@ -42,7 +42,7 @@ class RestTddApplicationTests {
 						post("/api/v1/members/join")
 								.content("""
                                         {
-                                            "username": "usernew",
+                                            "username": "userNew",
                                             "password": "1234",
                                             "nickname": "무명"
                                         }
@@ -53,7 +53,7 @@ class RestTddApplicationTests {
 				)
 				.andDo(print());
 
-		Member member = memberService.findByUsername("usernew").get();
+		Member member = memberService.findByUsername("userNew").get();
 
 		assertThat(member.getNickname()).isEqualTo("무명");
 
@@ -68,6 +68,7 @@ class RestTddApplicationTests {
 				.andExpect(jsonPath("$.data.nickname").value("무명"))
 				.andExpect(jsonPath("$.data.createdDate").exists())
 				.andExpect(jsonPath("$.data.modifiedDate").exists());
+
 	}
 
 	@Test
@@ -90,18 +91,12 @@ class RestTddApplicationTests {
 				)
 				.andDo(print());
 
-		Member member = memberService.findByUsername("usernew").get();
-
-		assertThat(member.getNickname()).isEqualTo("무명");
-
 		resultActions
-				.andExpect(status().isCreated())
+				.andExpect(status().isConflict())
 				.andExpect(handler().handlerType(ApiV1MemberController.class))
 				.andExpect(handler().methodName("join"))
 				.andExpect(jsonPath("$.code").value("409-1"))
 				.andExpect(jsonPath("$.msg").value("이미 사용중인 아이디입니다."));
+
 	}
-
-
-
 }

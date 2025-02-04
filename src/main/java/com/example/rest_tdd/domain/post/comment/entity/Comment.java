@@ -1,9 +1,9 @@
 package com.example.rest_tdd.domain.post.comment.entity;
 
-import com.example.rest-tdd.domain.member.member.entity.Member;
-import com.example.rest-tdd.domain.post.post.entity.Post;
-import com.example.rest-tdd.global.entity.BaseTime;
-import com.example.rest-tdd.global.exception.ServiceException;
+import com.example.rest_tdd.domain.member.member.entity.Member;
+import com.example.rest_tdd.domain.post.post.entity.Post;
+import com.example.rest_tdd.global.entity.BaseTime;
+import com.example.rest_tdd.global.exception.ServiceException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ManyToOne;

@@ -1,13 +1,13 @@
 package com.example.rest_tdd.domain.post.comment.controller;
 
-import com.example.rest-tdd.domain.member.member.entity.Member;
-import com.example.rest-tdd.domain.post.comment.dto.CommentDto;
-import com.example.rest-tdd.domain.post.comment.entity.Comment;
-import com.example.rest-tdd.domain.post.post.entity.Post;
-import com.example.rest-tdd.domain.post.post.service.PostService;
-import com.example.rest-tdd.global.Rq;
-import com.example.rest-tdd.global.dto.RsData;
-import com.example.rest-tdd.global.exception.ServiceException;
+import com.example.rest_tdd.domain.member.member.entity.Member;
+import com.example.rest_tdd.domain.post.comment.dto.CommentDto;
+import com.example.rest_tdd.domain.post.comment.entity.Comment;
+import com.example.rest_tdd.domain.post.post.entity.Post;
+import com.example.rest_tdd.domain.post.post.service.PostService;
+import com.example.rest_tdd.global.Rq;
+import com.example.rest_tdd.global.dto.RsData;
+import com.example.rest_tdd.global.exception.ServiceException;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;

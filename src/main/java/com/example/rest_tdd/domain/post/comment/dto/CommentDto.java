@@ -1,6 +1,6 @@
 package com.example.rest_tdd.domain.post.comment.dto;
 
-import com.example.rest-tdd.domain.post.comment.entity.Comment;
+import com.example.rest_tdd.domain.post.comment.entity.Comment;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 

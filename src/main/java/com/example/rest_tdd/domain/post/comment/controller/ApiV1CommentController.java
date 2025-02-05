@@ -8,7 +8,6 @@ import com.example.rest_tdd.domain.post.post.service.PostService;
 import com.example.rest_tdd.global.Rq;
 import com.example.rest_tdd.global.dto.RsData;
 import com.example.rest_tdd.global.exception.ServiceException;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +21,6 @@ public class ApiV1CommentController {
 
     private final PostService postService;
     private final Rq rq;
-    private final EntityManager em;
 
     @GetMapping
     public List<CommentDto> getItems(@PathVariable long postId) {

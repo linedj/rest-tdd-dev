@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -33,6 +34,16 @@ public class ApiV1MemberControllerTest {
 
 	@Autowired
 	private MemberService memberService;
+
+
+	private void checkMember(ResultActions resultActions, Member member) throws Exception {
+		resultActions
+				.andExpect(jsonPath("$.data").exists())
+				.andExpect(jsonPath("$.data.id").value(member.getId()))
+				.andExpect(jsonPath("$.data.nickname").value(member.getNickname()))
+				.andExpect(jsonPath("$.data.createdDate").value(member.getCreatedDate().toString()))
+				.andExpect(jsonPath("$.data.modifiedDate").value(member.getModifiedDate().toString()));
+	}
 
 	@Test
 	@DisplayName("회원 가입")
@@ -63,12 +74,9 @@ public class ApiV1MemberControllerTest {
 				.andExpect(handler().handlerType(ApiV1MemberController.class))
 				.andExpect(handler().methodName("join"))
 				.andExpect(jsonPath("$.code").value("201-1"))
-				.andExpect(jsonPath("$.msg").value("회원 가입이 완료되었습니다."))
-				.andExpect(jsonPath("$.data").exists())
-				.andExpect(jsonPath("$.data.id").isNumber())
-				.andExpect(jsonPath("$.data.nickname").value("무명"))
-				.andExpect(jsonPath("$.data.createdDate").exists())
-				.andExpect(jsonPath("$.data.modifiedDate").exists());
+				.andExpect(jsonPath("$.msg").value("회원 가입이 완료되었습니다."));
+
+		checkMember(resultActions, member);
 
 	}
 
@@ -101,15 +109,9 @@ public class ApiV1MemberControllerTest {
 
 	}
 
-	@Test
-	@DisplayName("로그인 - 성공")
-	void login1() throws Exception {
 
-		String username = "user1";
-		String password = "user11234";
-
-		// 요청
-		ResultActions resultActions = mvc
+	private ResultActions loingRequest(String username, String password) throws Exception {
+		return mvc
 				.perform(
 						post("/api/v1/members/login")
 								.content("""
@@ -125,7 +127,17 @@ public class ApiV1MemberControllerTest {
 								)
 				)
 				.andDo(print());
+	}
 
+	@Test
+	@DisplayName("로그인 - 성공")
+	void login1() throws Exception {
+
+		String username = "user1";
+		String password = "user11234";
+
+		// 요청
+		ResultActions resultActions = loingRequest(username, password);
 		Member member = memberService.findByUsername(username).get();
 
 		// 응답. (요청 처리 결과)
@@ -142,36 +154,18 @@ public class ApiV1MemberControllerTest {
 				.andExpect(jsonPath("$.data.item.modifiedDate").value(member.getModifiedDate().toString()))
 				.andExpect(jsonPath("$.data.apiKey").value(member.getApiKey()));
 
+
 	}
 
 	@Test
-	@DisplayName("로그인 - 비밀번호 틀림")
+	@DisplayName("로그인 - 실패 - 비밀번호 틀림")
 	void login2() throws Exception {
 
 		String username = "user1";
-		String password = "123";
+		String password = "1234";
 
-		// 요청
-		ResultActions resultActions = mvc
-				.perform(
-						post("/api/v1/members/login")
-								.content("""
-                                        {
-                                            "username": "%s",
-                                            "password": "%s"
-                                        }
-                                        """
-										.formatted(username, password)
-										.stripIndent())
-								.contentType(
-										new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
-								)
-				)
-				.andDo(print());
+		ResultActions resultActions = loingRequest(username, password);
 
-		Member member = memberService.findByUsername(username).get();
-
-		// 응답. (요청 처리 결과)
 		resultActions
 				.andExpect(status().isUnauthorized())
 				.andExpect(handler().handlerType(ApiV1MemberController.class))
@@ -180,4 +174,32 @@ public class ApiV1MemberControllerTest {
 				.andExpect(jsonPath("$.msg").value("비밀번호가 일치하지 않습니다."));
 
 	}
+
+	@Test
+	@DisplayName("내 정보 조회")
+	void me() throws Exception {
+
+		String apiKey = "user1";
+
+		ResultActions resultActions = mvc
+				.perform(
+						get("/api/v1/members/me")
+								.header("Authorization", "Bearer " + apiKey)
+
+				)
+				.andDo(print());
+
+		resultActions
+				.andExpect(status().isOk())
+				.andExpect(handler().handlerType(ApiV1MemberController.class))
+				.andExpect(handler().methodName("me"))
+				.andExpect(jsonPath("$.code").value("200-1"))
+				.andExpect(jsonPath("$.msg").value("내 정보 조회가 완료되었습니다."));
+
+		Member member = memberService.findByApiKey(apiKey).get();
+		checkMember(resultActions, member);
+
+	}
+
+
 }

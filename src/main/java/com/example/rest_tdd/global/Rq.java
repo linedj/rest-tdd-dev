@@ -10,6 +10,7 @@ import org.springframework.web.context.annotation.RequestScope;
 
 import java.util.Optional;
 
+// Request, Response, Session, Cookie, Header
 @Component
 @RequiredArgsConstructor
 @RequestScope
@@ -20,17 +21,15 @@ public class Rq {
 
     public Member getAuthenticatedActor() {
 
-
         String authorizationValue = request.getHeader("Authorization");
+        String apiKey = authorizationValue.substring("Bearer ".length());
+        Optional<Member> opActor = memberService.findByApiKey(apiKey);
 
-        String password2 = authorizationValue.substring("Bearer ".length());
-        Optional<Member> opActor =
-                memberService.findByApiKey(password2);
-
-        if(opActor.isEmpty()){
-            throw new ServiceException("401-1", "잘못된 비밀번호 입니다.");
+        if(opActor.isEmpty()) {
+            throw new ServiceException("401-1", "잘못된 인증키입니다.");
         }
 
         return opActor.get();
+
     }
 }

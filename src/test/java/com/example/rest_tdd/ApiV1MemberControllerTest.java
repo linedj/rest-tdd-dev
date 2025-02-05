@@ -176,19 +176,24 @@ public class ApiV1MemberControllerTest {
 
 	}
 
-	@Test
-	@DisplayName("내 정보 조회")
-	void me() throws Exception {
 
-		String apiKey = "user1";
-
-		ResultActions resultActions = mvc
+	private ResultActions meRequest(String apiKey) throws Exception {
+		return mvc
 				.perform(
 						get("/api/v1/members/me")
 								.header("Authorization", "Bearer " + apiKey)
 
 				)
 				.andDo(print());
+	}
+
+	@Test
+	@DisplayName("내 정보 조회")
+	void me1() throws Exception {
+
+		String apiKey = "user1";
+
+		ResultActions resultActions = meRequest(apiKey);
 
 		resultActions
 				.andExpect(status().isOk())
@@ -199,6 +204,23 @@ public class ApiV1MemberControllerTest {
 
 		Member member = memberService.findByApiKey(apiKey).get();
 		checkMember(resultActions, member);
+
+	}
+
+	@Test
+	@DisplayName("내 정보 조회 - 실패 - 잘못된 api key")
+	void me2() throws Exception {
+
+		String apiKey = "";
+
+		ResultActions resultActions = meRequest(apiKey);
+
+		resultActions
+				.andExpect(status().isUnauthorized())
+				.andExpect(handler().handlerType(ApiV1MemberController.class))
+				.andExpect(handler().methodName("me"))
+				.andExpect(jsonPath("$.code").value("401-1"))
+				.andExpect(jsonPath("$.msg").value("잘못된 인증키입니다."));
 
 	}
 

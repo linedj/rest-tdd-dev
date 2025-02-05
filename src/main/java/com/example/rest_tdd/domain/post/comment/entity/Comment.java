@@ -39,7 +39,7 @@ public class Comment extends BaseTime {
 
         if (actor.isAdmin()) return;
 
-        if (actor.equals(this.author)) return;
+        if (actor.equals(this.author))return;
 
         throw new ServiceException("403-1", "자신이 작성한 댓글만 수정 가능합니다.");
 

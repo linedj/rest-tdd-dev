@@ -41,15 +41,17 @@ public class ApiV1PostControllerTest {
                 .andExpect(jsonPath("$.data.content").value(post.getContent()))
                 .andExpect(jsonPath("$.data.authorId").value(post.getAuthor().getId()))
                 .andExpect(jsonPath("$.data.authorName").value(post.getAuthor().getNickname()))
+                .andExpect(jsonPath("$.data.published").value(post.isPublished()))
+                .andExpect(jsonPath("$.data.listed").value(post.isListed()))
                 .andExpect(jsonPath("$.data.createdDate").value(matchesPattern(post.getCreatedDate().toString().replaceAll("0+$", "") + ".*")))
                 .andExpect(jsonPath("$.data.modifiedDate").value(matchesPattern(post.getModifiedDate().toString().replaceAll("0+$", "") + ".*")));
     }
 
-    private ResultActions itemRequest(long postId, String apikey) throws Exception {
+    private ResultActions itemRequest(long postId, String apiKey) throws Exception {
         return mvc
                 .perform(
                         get("/api/v1/posts/%d".formatted(postId))
-                                .header("Authorization", "Bearer " + apikey)
+                                .header("Authorization", "Bearer " + apiKey)
                 )
                 .andDo(print());
 
@@ -82,7 +84,7 @@ public class ApiV1PostControllerTest {
     void item2() throws Exception {
 
         long postId = 100000;
-        String apiKey = "user2";
+        String apiKey = "user1";
 
         ResultActions resultActions = itemRequest(postId, apiKey);
 
@@ -113,6 +115,7 @@ public class ApiV1PostControllerTest {
 
     }
 
+
     private ResultActions writeRequest(String apiKey, String title, String content) throws Exception {
         return mvc
                 .perform(
@@ -121,7 +124,9 @@ public class ApiV1PostControllerTest {
                                 .content("""
                                         {
                                             "title": "%s",
-                                            "content": "%s"
+                                            "content": "%s",
+                                            "published": true,
+                                            "listed": true
                                         }
                                         """
                                         .formatted(title, content)

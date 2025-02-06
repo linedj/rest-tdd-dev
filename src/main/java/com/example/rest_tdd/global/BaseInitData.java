@@ -56,19 +56,18 @@ public class BaseInitData {
 
         Member user1 = memberService.findByUsername("user1").get();
         Member user2 = memberService.findByUsername("user2").get();
-        Member user3 = memberService.findByUsername("user3").get();
 
-        Post post1 = postService.write(user1, "축구 하실분 모집합니다.", "저녁 6시까지 모여주세요.", true);
+        Post post1 = postService.write(user1, "축구 하실분 모집합니다.", "저녁 6시까지 모여주세요.", true, true);
         post1.addComment(user1, "저 참석하겠습니다.");
         post1.addComment(user2, "공격수 자리 있나요?");
 
-        Post post2 = postService.write(user1, "농구할사람?", "선착3명", true);
-        post2.addComment(user1, "저 참석하겠습니다.");
+        Post post2 = postService.write(user1, "농구하실분?", "3명 모집", true, false);
+        post2.addComment(user1, "저는 이미 축구하기로 함..");
 
-        postService.write(user2,"title1", "content1", false);
-        postService.write(user2, "title2", "content2", false);
-        postService.write(user3, "title3", "content3", false);
+        postService.write(user2, "title3", "content3", false, true);
 
     }
+
+
 
 }

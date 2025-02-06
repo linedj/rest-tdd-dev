@@ -22,21 +22,27 @@ public class ApiV1PostController {
     private final PostService postService;
     private final Rq rq;
 
+    record GetItemsResBody(List<PostDto> items, int currentPageNo, int totalPages){}
 
     @GetMapping
-    public RsData<List<PostDto>> getItems(){
+    public RsData<GetItemsResBody> getItems() {
 
         List<Post> posts = postService.getListedItems();
+
+        List<PostDto> postDtos = posts.stream()
+                .map(PostDto::new)
+                .toList();
+
+        int totalPages = 3;
+        int currentPageNo = 1;
 
         return new RsData<>(
                 "200-1",
                 "글 목록 조회가 완료되었습니다.",
-                posts.stream()
-                        .map(PostDto::new)
-                        .toList()
+                new GetItemsResBody(postDtos, currentPageNo, totalPages)
         );
-    }
 
+    }
 
     @GetMapping("{id}")
     public RsData<PostDto> getItem(@PathVariable long id) {
@@ -45,7 +51,7 @@ public class ApiV1PostController {
                 () -> new ServiceException("404-1", "존재하지 않는 글입니다.")
         );
 
-        if(!post.isPublished()) {
+        if (!post.isPublished()) {
             Member actor = rq.getAuthenticatedActor(); //
             post.canRead(actor);
         }
@@ -76,7 +82,8 @@ public class ApiV1PostController {
         );
     }
 
-    record ModifyReqBody(@NotBlank String title, @NotBlank String content) {}
+    record ModifyReqBody(@NotBlank String title, @NotBlank String content) {
+    }
 
     @PutMapping("{id}")
     public RsData<PostDto> modify(@PathVariable long id, @RequestBody @Valid ModifyReqBody reqBody) {

@@ -65,27 +65,28 @@ public class ApiV1PostControllerTest {
                 .andExpect(handler().methodName("getItems"))
                 .andExpect(jsonPath("$.code").value("200-1"))
                 .andExpect(jsonPath("$.msg").value("글 목록 조회가 완료되었습니다."))
-                .andExpect(jsonPath("$.data.length()").value(3))
-                .andExpect(jsonPath("$.data.currentPageNo").isNumber())
-                .andExpect(jsonPath("$.data.totalPages").isNumber());
+                .andExpect(jsonPath("$.data.length()").value( 3)) // 한페이지당 보여줄 글 개수
+                .andExpect(jsonPath("$.data.currentPageNo").isNumber()) // 현재 페이지
+                .andExpect(jsonPath("$.data.totalPages").isNumber()); // 전체 페이지 개수
+
+
 
         List<Post> posts = postService.getListedItems();
-
         for(int i = 0; i < posts.size(); i++) {
 
             Post post = posts.get(i);
 
             resultActions
-                    .andExpect(jsonPath("$.data[%d]".formatted(i)).exists())
-                    .andExpect(jsonPath("$.data[%d].id".formatted(i)).value(post.getId()))
-                    .andExpect(jsonPath("$.data[%d].title".formatted(i)).value(post.getTitle()))
-                    .andExpect(jsonPath("$.data[%d].content".formatted(i)).doesNotExist())
-                    .andExpect(jsonPath("$.data[%d].authorId".formatted(i)).value(post.getAuthor().getId()))
-                    .andExpect(jsonPath("$.data[%d].authorName".formatted(i)).value(post.getAuthor().getNickname()))
-                    .andExpect(jsonPath("$.data[%d].published".formatted(i)).value(post.isPublished()))
-                    .andExpect(jsonPath("$.data[%d].listed".formatted(i)).value(post.isListed()))
-                    .andExpect(jsonPath("$.data[%d].createdDate".formatted(i)).value(matchesPattern(post.getCreatedDate().toString().replaceAll("0+$", "") + ".*")))
-                    .andExpect(jsonPath("$.data[%d].modifiedDate".formatted(i)).value(matchesPattern(post.getModifiedDate().toString().replaceAll("0+$", "") + ".*")));
+                    .andExpect(jsonPath("$.data.items[%d]".formatted(i)).exists())
+                    .andExpect(jsonPath("$.data.items[%d].id".formatted(i)).value(post.getId()))
+                    .andExpect(jsonPath("$.data.items[%d].title".formatted(i)).value(post.getTitle()))
+                    .andExpect(jsonPath("$.data.items[%d].content".formatted(i)).doesNotExist())
+                    .andExpect(jsonPath("$.data.items[%d].authorId".formatted(i)).value(post.getAuthor().getId()))
+                    .andExpect(jsonPath("$.data.items[%d].authorName".formatted(i)).value(post.getAuthor().getNickname()))
+                    .andExpect(jsonPath("$.data.items[%d].published".formatted(i)).value(post.isPublished()))
+                    .andExpect(jsonPath("$.data.items[%d].listed".formatted(i)).value(post.isListed()))
+                    .andExpect(jsonPath("$.data.items[%d].createdDate".formatted(i)).value(matchesPattern(post.getCreatedDate().toString().replaceAll("0+$", "") + ".*")))
+                    .andExpect(jsonPath("$.data.items[%d].modifiedDate".formatted(i)).value(matchesPattern(post.getModifiedDate().toString().replaceAll("0+$", "") + ".*")));
         }
 
 

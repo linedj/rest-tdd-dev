@@ -27,7 +27,6 @@ public class ApiV1PostController {
                                     @RequestParam(defaultValue = "3") int pageSize,
                                     @RequestParam(defaultValue = "title") String keywordType,
                                     @RequestParam(defaultValue = "") String keyword) {
-
         Page<Post> postPage = postService.getListedItems(page, pageSize, keywordType, keyword);
 
         return new RsData<>(
